@@ -393,7 +393,7 @@ export default {
 .images {
     position: relative;
     padding-top: 30px;
-    display: grid;
+    display: none;
     grid-template-columns: 150px 150px 150px;
     justify-content: center;
     grid-gap: 60px;
