@@ -7,7 +7,15 @@ export default{
     },
     mutations: {
         setAlbums(state, albums){
-            state.albums= albums
+            if(Array.isArray(albums)){
+                state.albums = albums
+                return;
+            }
+            if(albums.constructor === Object){
+                state.albums.push(albums)
+                return;
+            }
+                
         },
     },
     actions: {

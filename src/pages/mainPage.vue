@@ -29,6 +29,13 @@
               <span class="album__icon" ref="albumsIcon"></span
               >{{ album.title }}
             </div>
+            <div class="preloader" ref="preloader">
+                <svg class="preloader__image" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                    <path fill="currentColor"
+                    d="M304 48c0 26.51-21.49 48-48 48s-48-21.49-48-48 21.49-48 48-48 48 21.49 48 48zm-48 368c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48-21.49-48-48-48zm208-208c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48-21.49-48-48-48zM96 256c0-26.51-21.49-48-48-48S0 229.49 0 256s21.49 48 48 48 48-21.49 48-48zm12.922 99.078c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48c0-26.509-21.491-48-48-48zm294.156 0c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48c0-26.509-21.49-48-48-48zM108.922 60.922c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48-21.491-48-48-48z">
+                    </path>
+                </svg>
+            </div>
     <!-- images -->
             <ul class="images"
               ref="blockImages"
@@ -59,7 +66,6 @@ import { mapActions, mapState } from "vuex";
 export default {
   name: "mainPage",
   data: () => ({
-      toggleAlbum: false,
     starBlock: {
         inActiveUrl: require("@/assets/images/icons/star_for_all_images.svg"),
          activeUrl: require("@/assets/images/icons/star_for_all_images-yellow.svg"),
@@ -90,6 +96,7 @@ export default {
         }
       return;
       }           
+      
       //отправка запроса в STORE на вывод названий альбома       
       await this.fetchAlbums(id);
 
@@ -110,19 +117,26 @@ export default {
 
 //---request Images---
     async showImages(id) {
+
       // закрытие всех UL элементов, содержащие изображения в альбоме.
       for (let i = 0; i < this.$refs.blockImages.length; i++) {
         this.$refs.blockImages[i].style.display = "none";     
       }
-      //корректируем ID для открытия/закрытия альбомов на странице  
+    //корректируем ID для открытия/закрытия альбомов и прелоадера на странице  
       let newIdAlbums = id - 1;
       //условие повторного нажатия на альбом. Закрываем вкладку и выходим без срабатыв. дальнейшего скрипта
       if(this.$refs.albumsIcon[newIdAlbums].classList.contains("album__icon--active")){
         this.$refs.albumsIcon[newIdAlbums].classList.remove("album__icon--active")
       return
       }
+
+    // открытие нужного PRELOADER элемента для изображений в альбоме по скорректированному ID
+        this.$refs.preloader[newIdAlbums].style.display = "block";
       //отправка запроса в STORE на вывод изображений по клику на альбом 
       await this.fetchImages(id);
+      // закрытие нужного PRELOADER элемента для изображений в альбоме по скорректированному ID
+      this.$refs.preloader[newIdAlbums].style.display = "none";
+
       //Логика , отвечающая за запоминание активных иконок STARS при открытии/закрытии других альбомов 
       //перебираем массив изображ. во вкладке "избранное" и массив вывода изображ. в альбоме
       for (let i = 0; i < this.arrayForStarImagePage.length; i++) {
@@ -137,12 +151,14 @@ export default {
       }
       // открытие нужного UL элемента для изображений в альбоме по скорректированному ID
       this.$refs.blockImages[newIdAlbums].style.display = "grid";
+
       // убираем активный класс с иконки названия альбома. Возвращая в закрытое состояние
       for (let i = 0; i < this.$refs.albumsIcon.length; i++) {
         this.$refs.albumsIcon[i].classList.remove("album__icon--active");
       }
       // вешаем активный класс на иконку названия альбома. Создавая эффект открытого состояния
       this.$refs.albumsIcon[newIdAlbums].classList.add("album__icon--active");
+
     },
 //---reviewImage in Modal---
     reviewImage(id) {
@@ -202,6 +218,7 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+
 
 .modal-Image {
   position: fixed;
@@ -388,6 +405,23 @@ export default {
         transform: rotate(180deg);
       }
     }
+  }
+}
+
+.preloader{
+    text-align: center;
+    width: 100%;
+    height: 60px;
+    background: transparent;
+    display: none;
+    &__image{
+        height: 100%;
+        animation: preloader-rotate 2s infinite linear;
+    }
+}
+@keyframes preloader-rotate {
+  100% {
+    transform: rotate(360deg);
   }
 }
 .images {

@@ -12,7 +12,13 @@ export default{
     mutations: {
         // setImagesAll
         setImages(state, images){
-            state.images= images
+            if(Array.isArray(images)){
+                state.images= images
+            }
+            if(images.constructor === Object){
+                state.images.push(images)
+                return;
+            }
         },
         // add obj in arrayForStarImagePage
         addImagesStar(state, image){
