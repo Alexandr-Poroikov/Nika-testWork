@@ -44,6 +44,8 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+
+
 .clearPage{
     padding-top: 30px;
     width: 385px;

@@ -14,11 +14,12 @@ export default{
         setImages(state, images){
             if(Array.isArray(images)){
                 state.images= images
-            }
-            if(images.constructor === Object){
+            }else{
                 state.images.push(images)
-                return;
             }
+            
+                
+
         },
         // add obj in arrayForStarImagePage
         addImagesStar(state, image){

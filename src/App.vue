@@ -1,6 +1,13 @@
 <template>
   <div id="app">
     <div class="main">
+      <div class="pagePreloader" v-if="pagePreloader">
+          <!-- preloader (start) -->
+        <div class="pagePreloader__image">
+            <img src="@/assets/images/loading.gif" alt="loading">
+        </div>
+        <!-- (end) -->
+      </div>
       <div class="users">
 
         <div class="users__buttons">
@@ -31,10 +38,10 @@
 </template>
 
 <script>
+
 import { mapState } from "vuex";
 export default {
   data: () => ({
-    active: false,
     starBlock: {
       inActiveUrl: require("@/assets/images/icons/star.svg"),
       activeUrl: require("@/assets/images/icons/star-yellow.svg"),
@@ -44,9 +51,11 @@ export default {
     //для проверки на наличие элементов в массиве, чтобы сделать ЗВЕЗДУ активной/неактивной
     ...mapState({
       arrayForStarImagePage: (state) => state.getImages.arrayForStarImagePage,
+        pagePreloader: (state) => state.getUsers.preloader
     }),
   },
   methods: {
+    //   ...mapActions(['setPreloader']),
     activePageStar() {
       //активный раздел страницы
       if (!this.$refs.imageBtn.classList.contains("users--active")) {
@@ -112,7 +121,33 @@ body {
   padding-top: 30px;
   background-color: #cfebf1;
 }
-
+//preloader page
+.pagePreloader{
+    position:fixed;
+    top: 0;
+    left:0;
+    right: 0;
+    bottom: 0;
+    background: #f3ffff;
+    text-align: center;
+    z-index: 1000;
+    &__image{
+        width: 200px;
+        height: 200px;
+        margin: 0 auto;
+        margin-top: 50vh;
+        transform: translateY(-50%);
+        & img{
+            width:100%;
+        }
+    }
+}
+@keyframes preloader-rotate {
+  100% {
+    transform: rotate(600deg);
+  }
+}
+//main block
 .users {
   background-color: #e6f6ff;
   margin: 0 auto;

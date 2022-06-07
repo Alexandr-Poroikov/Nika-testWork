@@ -29,12 +29,11 @@
               <span class="album__icon" ref="albumsIcon"></span
               >{{ album.title }}
             </div>
+    <!-- preloader -->
             <div class="preloader" ref="preloader">
-                <svg class="preloader__image" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-                    <path fill="currentColor"
-                    d="M304 48c0 26.51-21.49 48-48 48s-48-21.49-48-48 21.49-48 48-48 48 21.49 48 48zm-48 368c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48-21.49-48-48-48zm208-208c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48-21.49-48-48-48zM96 256c0-26.51-21.49-48-48-48S0 229.49 0 256s21.49 48 48 48 48-21.49 48-48zm12.922 99.078c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48c0-26.509-21.491-48-48-48zm294.156 0c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48c0-26.509-21.49-48-48-48zM108.922 60.922c-26.51 0-48 21.49-48 48s21.49 48 48 48 48-21.49 48-48-21.491-48-48-48z">
-                    </path>
-                </svg>
+                <div class="preloader__img">
+                    <img src="@/assets/images/loading.gif" alt="loading">
+                </div>
             </div>
     <!-- images -->
             <ul class="images"
@@ -100,7 +99,7 @@ export default {
       //отправка запроса в STORE на вывод названий альбома       
       await this.fetchAlbums(id);
 
-      //открытие нужных альбомов
+    //   открытие нужных альбомов
       for (let i = 0; i < this.$refs.blockAlbums.length; i++) {
         //сравниваем название альбомов с записанным id USERS
         if(this.$refs.blockAlbums[i].dataset.idalbums == id){
@@ -117,25 +116,20 @@ export default {
 
 //---request Images---
     async showImages(id) {
-
+     //корректируем ID для открытия/закрытия альбомов и прелоадера на странице  
+      let newIdAlbums = id - 1;       
       // закрытие всех UL элементов, содержащие изображения в альбоме.
       for (let i = 0; i < this.$refs.blockImages.length; i++) {
         this.$refs.blockImages[i].style.display = "none";     
       }
-    //корректируем ID для открытия/закрытия альбомов и прелоадера на странице  
-      let newIdAlbums = id - 1;
+
       //условие повторного нажатия на альбом. Закрываем вкладку и выходим без срабатыв. дальнейшего скрипта
       if(this.$refs.albumsIcon[newIdAlbums].classList.contains("album__icon--active")){
         this.$refs.albumsIcon[newIdAlbums].classList.remove("album__icon--active")
+        // закрытие нужного PRELOADER элемента для изображений в альбоме по скорректированному ID
+       this.$refs.preloader[newIdAlbums].style.display = "none";
       return
       }
-
-    // открытие нужного PRELOADER элемента для изображений в альбоме по скорректированному ID
-        this.$refs.preloader[newIdAlbums].style.display = "block";
-      //отправка запроса в STORE на вывод изображений по клику на альбом 
-      await this.fetchImages(id);
-      // закрытие нужного PRELOADER элемента для изображений в альбоме по скорректированному ID
-      this.$refs.preloader[newIdAlbums].style.display = "none";
 
       //Логика , отвечающая за запоминание активных иконок STARS при открытии/закрытии других альбомов 
       //перебираем массив изображ. во вкладке "избранное" и массив вывода изображ. в альбоме
@@ -149,6 +143,12 @@ export default {
               this.$refs.imgStar[positionOnThePage].src = this.starBlock.activeUrl
           }
       }
+      // открытие нужного PRELOADER элемента для изображений в альбоме по скорректированному ID
+     this.$refs.preloader[newIdAlbums].style.display = "block";     
+      //отправка запроса в STORE на вывод изображений по клику на альбом 
+      await this.fetchImages(id);   
+       // закрытие нужного PRELOADER элемента для изображений в альбоме по скорректированному ID
+       this.$refs.preloader[newIdAlbums].style.display = "none";
       // открытие нужного UL элемента для изображений в альбоме по скорректированному ID
       this.$refs.blockImages[newIdAlbums].style.display = "grid";
 
@@ -170,8 +170,10 @@ export default {
 
 //---addImage in albums---
     addImage(image){
+        
         //корректируем ID для вывода на странице 
         let idImage = image.id - 1
+
         //условие проверки на пуской массив и добавления изображений в "Избранное"
         if(this.arrayForStarImagePage.length){
             //узнаем, есть ли дублирующий элемент в массивее, который находиться в Избранное""
@@ -219,7 +221,11 @@ export default {
 </script>
 <style lang="scss" scoped>
 
-
+@keyframes preloader-rotate {
+  100% {
+    transform: rotate(720deg);
+  }
+}
 .modal-Image {
   position: fixed;
   pointer-events: none;
@@ -409,21 +415,20 @@ export default {
 }
 
 .preloader{
-    text-align: center;
-    width: 100%;
-    height: 60px;
-    background: transparent;
     display: none;
-    &__image{
-        height: 100%;
-        animation: preloader-rotate 2s infinite linear;
+    width: 100%;
+    height: 100px;
+    background: #f5f9fe;
+    &__img{
+        margin: 0 auto;
+        width: 100px;
+        height: 110px;
+        & img{
+            height:100%
+        }
     }
 }
-@keyframes preloader-rotate {
-  100% {
-    transform: rotate(360deg);
-  }
-}
+
 .images {
     position: relative;
     padding-top: 30px;

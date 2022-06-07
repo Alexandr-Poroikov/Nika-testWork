@@ -9,12 +9,14 @@ export default{
         setAlbums(state, albums){
             if(Array.isArray(albums)){
                 state.albums = albums
-                return;
-            }
-            if(albums.constructor === Object){
+                
+            }else{
                 state.albums.push(albums)
-                return;
             }
+            // if(albums.constructor === Object){
+            //     state.albums.push(albums)
+            //     return;
+            // }
                 
         },
     },
